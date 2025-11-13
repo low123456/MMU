@@ -1,5 +1,28 @@
 import streamlit as st
-st.title("🎈 My new app")
+import clips
+import logging
 
-if st.button("Show Message"):
-   st.info("This is your message box!")
+# setup working environment
+logging.basicConfig(level=15,format='%(message)s')
+
+env = clips.Environment()
+router = clips.LoggingRouter()
+env.add_router(router)
+
+#input
+name = st.text_input("REnter your namee")
+
+#knowledge base
+env.build('(deftemplate result (slot name))')
+#add facts t oworking memory
+env.assert_string(f'(result(namr"{name}"))')
+#inference
+env.run()
+
+#output
+results=[]
+for fact in env.facts():
+    if fact.template.name=='result':
+        results.append(fact['name']) #why assert the fact?
+
+st.write(results[0],"output")
